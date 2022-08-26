@@ -1,4 +1,3 @@
-from msilib.schema import Control
 from tinydb import TinyDB, Query
 import sys
 import random
@@ -11,8 +10,9 @@ db = TinyDB("players.json")
 def serialize_id_player(id_of_player):
     id_player = TinyDB("id_player.json")
     id_player.truncate()
-    serialized_id_player = { "id" : id_of_player }
+    serialized_id_player = {"id": id_of_player}
     id_player.insert(serialized_id_player)
+
 
 def deserialize_id_player():
     id_player = TinyDB("id_player.json")
@@ -38,8 +38,6 @@ def serialize_players(list_of_players):
 
         db.insert(serialize_player)
 
-def deserialize():
-    pass
 
 def deserialize_players():
     db = TinyDB("players.json")
@@ -62,26 +60,26 @@ def deserialize_players():
 
     return list_of_players_from_db
 
+
 def add_player():
     # Récupération des informations du nouveau joueur depuis la vue
     list_player = []
     player_form = View.create_player_form()
     id_player = deserialize_id_player()
     player = Player(
-            str(id_player),
-            player_form[0],
-            player_form[1],
-            player_form[2],
-            player_form[3],
-            player_form[4],
-            0,
-            [str(id_player)],
-        )
+        str(id_player),
+        player_form[0],
+        player_form[1],
+        player_form[2],
+        player_form[3],
+        player_form[4],
+        0,
+        [str(id_player)],
+    )
     id_player += 1
     serialize_id_player(id_player)
     list_player.append(player)
     serialize_players(list_player)
-    
 
 
 def add_players_on_tournament():
@@ -97,15 +95,15 @@ def add_players_on_tournament():
             id_player = deserialize_id_player()
             player_form = View.create_player_form()
             player = Player(
-                    str(id_player),
-                    player_form[0],
-                    player_form[1],
-                    player_form[2],
-                    player_form[3],
-                    player_form[4],
-                    0,
-                    [str(id_player)],
-                )
+                str(id_player),
+                player_form[0],
+                player_form[1],
+                player_form[2],
+                player_form[3],
+                player_form[4],
+                0,
+                [str(id_player)],
+            )
             id_player += 1
             serialize_id_player(id_player)
             new_player.append(player)
@@ -115,7 +113,7 @@ def add_players_on_tournament():
             entry = View.display_player_from_db(list_of_players_from_db)
             if entry == "0":
                 continue
-            else :
+            else:
                 entry = int(entry) - 1
                 list_of_players.append(
                     Player(
@@ -126,17 +124,18 @@ def add_players_on_tournament():
                         list_of_players_from_db[entry].sex,
                         list_of_players_from_db[entry].ranking,
                         list_of_players_from_db[entry].number_of_points,
-                        list_of_players_from_db[entry].played_with
-                        )
+                        list_of_players_from_db[entry].played_with,
                     )
+                )
 
                 list_of_players_from_db.pop(entry)
-                
+
                 player_number += 1
 
     serialize_players(new_player)
-        
+
     return list_of_players
+
 
 def add_tournament():
     # Récupération des informations de la vue
@@ -149,6 +148,7 @@ def add_tournament():
     )
 
     return tournament
+
 
 def create_pair_of_players(list_of_players):
     players_not_assigned = 0
@@ -179,11 +179,15 @@ def create_pair_of_players(list_of_players):
         while players_not_assigned < len(list_of_players):
             # Si le joueur n'est pas dans la liste des joueurs assignés
             if (
-                search_in_list(list_of_players[players_not_assigned].id, players_assigned)
+                search_in_list(
+                    list_of_players[players_not_assigned].id, players_assigned
+                )
                 == False
             ):
                 while next_player < 8:
-                    if search_in_list(list_of_players[next_player].id, players_assigned):
+                    if search_in_list(
+                        list_of_players[next_player].id, players_assigned
+                    ):
                         next_player += 1
                     elif search_in_list(
                         list_of_players[players_not_assigned].id,
@@ -193,9 +197,12 @@ def create_pair_of_players(list_of_players):
                     else:
                         # Les joueurs assignés
                         players_assigned.append(list_of_players[next_player].id)
-                        players_assigned.append(list_of_players[players_not_assigned].id)
+                        players_assigned.append(
+                            list_of_players[players_not_assigned].id
+                        )
                         pair = Match(
-                            list_of_players[next_player], list_of_players[players_not_assigned]
+                            list_of_players[next_player],
+                            list_of_players[players_not_assigned],
                         )
                         # Ajout de l'ID dans la liste des parties jouées
                         list_of_players[next_player].played_with.append(
@@ -211,6 +218,7 @@ def create_pair_of_players(list_of_players):
             players_not_assigned += 1
 
     return pair_of_players
+
 
 def assign_color_players(pair_of_players):
     assigned_colors = []
@@ -230,6 +238,7 @@ def assign_color_players(pair_of_players):
             assigned_colors.append(pair)
 
     return assigned_colors
+
 
 def results(pair_of_players):
     players = []
@@ -254,8 +263,10 @@ def results(pair_of_players):
 
     return players
 
+
 def search_in_list(tosearch, liste):
     return tosearch in liste
+
 
 def start_tournament(tournament):
     controller = Controller()
@@ -264,7 +275,9 @@ def start_tournament(tournament):
     View.display_tournament(tournament)
     while Tournament.round_number < 5:
         print(f"Tour {Tournament.round_number} : ")
-        controller.pair_of_players= create_pair_of_players(controller.list_of_players[0])
+        controller.pair_of_players = create_pair_of_players(
+            controller.list_of_players[0]
+        )
         assign_color_players(controller.pair_of_players)
         View.display_pairs(controller.pair_of_players)
         resultats = results(controller.pair_of_players)
@@ -286,6 +299,7 @@ players = [
 
 test = Tournament("Calaisfornia", "Calais", "Le meilleur tournoi de Calais !", players)
 
+
 def list_of_players_from_db():
     players = deserialize_players()
     user_entry = View.display_player_from_db(players)
@@ -295,6 +309,7 @@ def list_of_players_from_db():
         user_entry = int(user_entry) - 1
         get_info_player(players[user_entry])
 
+
 def get_info_player(player):
     user_entry = View.display_infos_player(player)
     print("test")
@@ -302,8 +317,6 @@ def get_info_player(player):
         list_of_players_from_db()
     elif user_entry == "2":
         start_application()
-
-
 
 
 def start_application():
@@ -321,5 +334,6 @@ def start_application():
         elif entry == "3":
             list_of_players_from_db()
     sys.exit()
+
 
 start_application()
