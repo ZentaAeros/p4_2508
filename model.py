@@ -70,11 +70,8 @@ class Match:
         self.player1 = player1
         self.player2 = player2
 
-    def __repr__(self):
+    def __str__(self):
         return f"{self.player1.__repr__()} vs {self.player2.__repr__()}"
-
-    def __str__():
-        pass
 
 
 class Round(Match):
@@ -82,12 +79,13 @@ class Round(Match):
         self.list_of_matchs = list_of_matchs
 
 
-class Database():
+class Database:
     def remove_player_from_db(to_remove):
-        db = TinyDB('players.json')
+        db = TinyDB("players.json")
         db.all()
         player_to_delete = Query()
         db.remove(player_to_delete.id == to_remove)
+
 
 class Controller:
     list_of_matchs = []
